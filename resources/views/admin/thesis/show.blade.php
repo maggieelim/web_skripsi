@@ -216,7 +216,7 @@
                         <div class="border-top pt-2">
 
                             <div class="mb-2">
-                                <div class="small text-muted fw-bold">
+                                <div class="small fw-bold">
                                     Substansi
                                 </div>
                                 @if($revisionNote->substance_note)
@@ -231,7 +231,7 @@
                             </div>
 
                             <div class="mb-2">
-                                <div class="small text-muted fw-bold">
+                                <div class="small fw-bold">
                                     Metodologi
                                 </div>
                                 @if($revisionNote->methodology_note)
@@ -246,7 +246,7 @@
                             </div>
 
                             <div>
-                                <div class="small text-muted fw-bold">
+                                <div class="small fw-bold">
                                     Teknis Penulisan
                                 </div>
                                 @if($revisionNote->writing_note)
