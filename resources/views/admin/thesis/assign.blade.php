@@ -183,8 +183,10 @@ $chairman = $thesis->examiners->where('role', 'ketua sidang')->first();
 
 <datalist id="lecturer_list">
     @foreach ($lecturers as $lecturer)
+    @if ($lecturer->user)
     <option value="{{ $lecturer->user->name }}" data-id="{{ $lecturer->id }}">
     </option>
+    @endif
     @endforeach
 </datalist>
 
@@ -197,10 +199,13 @@ $chairman = $thesis->examiners->where('role', 'ketua sidang')->first();
     });
 
     const lecturers = @json(
-        $lecturers->map(fn($l) => [
-            'id' => $l->id,
-            'name' => $l->user->name
-        ])
+        $lecturers
+            ->filter(fn($l) => $l->user)
+            ->map(fn($l) => [
+                'id' => $l->id,
+                'name' => $l->user->name
+            ])
+            ->values()
     );
 
     document.querySelectorAll('.lecturer-search').forEach(input => {
