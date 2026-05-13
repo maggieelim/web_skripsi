@@ -14,7 +14,8 @@
                 {{-- JUDUL SKRIPSI --}}
                 <div class="col-md-12 mb-3">
                     <label class="form-label">Judul Skripsi</label>
-                    <textarea type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+
+                    <textarea name="title" class="form-control @error('title') is-invalid @enderror"
                         placeholder="Masukkan judul skripsi" required>{{ old('title') }}</textarea>
                 </div>
 
@@ -41,15 +42,17 @@
                     </label>
 
                     <input type="text" class="form-control lecturer-search" list="lecturer_list"
-                        placeholder="Cari Dosen Pembimbing" data-target="supervisor_id" required>
+                        placeholder="Cari Dosen Pembimbing" data-target="supervisor_id" autocomplete="off" required>
 
-                    <input type="hidden" name="supervisor_id" id="supervisor_id">
+                    <input type="hidden" name="supervisor_id" id="supervisor_id" value="{{ old('supervisor_id') }}">
                 </div>
 
                 <datalist id="lecturer_list">
                     @foreach ($lecturers as $lecturer)
+                    @if ($lecturer->user)
                     <option value="{{ $lecturer->user->name }}" data-id="{{ $lecturer->id }}">
                     </option>
+                    @endif
                     @endforeach
                 </datalist>
 
@@ -67,7 +70,7 @@
                     <label class="form-label">Manuskrip Tugas Akhir</label>
 
                     <input type="url" name="manuscript" class="form-control @error('manuscript') is-invalid @enderror"
-                        value="{{ old('manuscript') }}" placeholder="Masukkan link Google Drive manuskript tugas akhir"
+                        value="{{ old('manuscript') }}" placeholder="Masukkan link Google Drive manuskrip tugas akhir"
                         required>
                 </div>
 
@@ -82,25 +85,27 @@
 
                 {{-- BUTTON --}}
                 <div class="col-12 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
                         Upload Skripsi
                     </button>
                 </div>
             </div>
         </form>
     </div>
-
 </div>
 
 <script>
     const lecturers = @json(
-        $lecturers->map(fn($l) => [
-            'id' => $l->id,
-            'name' => $l->user->name
-        ])
+        $lecturers
+            ->filter(fn($l) => $l->user)
+            ->map(fn($l) => [
+                'id' => $l->id,
+                'name' => $l->user->name
+            ])
+            ->values()
     );
 
-    // lecturer autocomplete
+    // autocomplete lecturer
     document.querySelectorAll('.lecturer-search').forEach(input => {
 
         input.addEventListener('input', function () {
@@ -114,18 +119,20 @@
             );
 
             target.value = selected ? selected.id : '';
+
         });
 
     });
 
-    // loading button
-    document.querySelector('form').addEventListener('submit', function() {
+    // loading submit button
+    document.querySelector('form').addEventListener('submit', function () {
 
-        const btn = document.querySelector('button[type="submit"]');
+        const btn = document.getElementById('submit-btn');
 
         btn.innerText = 'Uploading...';
         btn.disabled = true;
 
     });
+
 </script>
 @endsection
