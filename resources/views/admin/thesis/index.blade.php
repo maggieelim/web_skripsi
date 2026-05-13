@@ -10,16 +10,11 @@
                     <h5 class="mb-0">List Tugas Akhir</h5>
                 </div>
                 <div class="d-flex flex-wrap justify-content-start justify-content-md-end gap-2 mt-2 mt-md-0">
-                    @if($theses->count() < 1) <a href="{{ route('thesis.create') }}" class="btn btn-primary btn-sm"
-                        style="white-space: nowrap;">
-                        + Create
-                        </a>
-                        @endif
-                        <!-- Tombol toggle collapse -->
-                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
-                            <i class="fas fa-filter"></i> Filter
-                        </button>
+                    <!-- Tombol toggle collapse -->
+                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
                 </div>
             </div>
 
