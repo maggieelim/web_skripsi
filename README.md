@@ -1,407 +1,107 @@
-# Dokumentasi Repository PSPD Skripsi Web
+# Web Skripsi Documentation
 
-Repository:
-[web_skripsi Repository](https://github.com/maggieelim/web_skripsi?utm_source=chatgpt.com)
+## Overview
 
-Berdasarkan struktur repository dan pola project Laravel yang digunakan, repository `web_skripsi` merupakan aplikasi manajemen skripsi berbasis Laravel yang digunakan untuk mengelola proses skripsi mahasiswa, dosen pembimbing, sidang, revisi, dan administrasi akademik. Struktur project mengikuti standar Laravel modern dengan pemisahan MVC, middleware, role management, serta fitur upload dokumen dan generate dokumen akademik. ([GitHub][1])
+Web Skripsi adalah aplikasi berbasis web untuk manajemen skripsi / tugas akhir mahasiswa yang dibangun menggunakan framework Laravel.
 
----
+Sistem ini dirancang untuk membantu proses:
 
-# 1. Overview Project
-
-Aplikasi `web_skripsi` adalah sistem informasi skripsi berbasis web yang dirancang untuk membantu pengelolaan proses tugas akhir secara digital.
-
-Fitur utama yang kemungkinan tersedia berdasarkan struktur dan implementasi project:
-
-* Authentication login multi role
-* Dashboard berdasarkan role
 * Pengajuan skripsi
-* Manajemen dosen pembimbing
+* Penentuan dosen pembimbing
 * Penjadwalan sidang
 * Penilaian sidang
-* Upload dokumen skripsi
-* Generate BAP / PDF
-* Revisi sidang
-* Tracking status skripsi
-* Role & permission management
-* Notification system
-* Manajemen mahasiswa dan dosen
+* Upload dokumen akademik
+* Monitoring revisi
+* Dashboard akademik
+
+Project menggunakan arsitektur MVC Laravel dan memanfaatkan Blade Template untuk frontend.
+
+Repository:
+
+[web_skripsi Repository](https://github.com/maggieelim/web_skripsi?utm_source=chatgpt.com)
 
 ---
 
-# 2. Teknologi yang Digunakan
+# Tech Stack
 
-| Teknologi                  | Fungsi             |
-| -------------------------- | ------------------ |
-| PHP 8+                     | Backend language   |
-| Laravel                    | Framework utama    |
-| MySQL                      | Database           |
-| Blade                      | Template engine    |
-| Bootstrap / Admin Template | UI frontend        |
-| JavaScript                 | Interaksi frontend |
-| jQuery / AJAX              | Dynamic request    |
-| DomPDF                     | Generate PDF       |
-| Laravel Storage            | File upload        |
-| Spatie Permission          | Role management    |
+## Backend
+
+* PHP
+* Laravel
+* MySQL
+* Eloquent ORM
+
+## Frontend
+
+* Blade Template
+* Bootstrap / Admin Template
+* JavaScript
+* AJAX
+
+## Tools
+
+* Composer
+* Node.js & NPM
+* Git
 
 ---
 
-# 3. Struktur Repository
-
-Struktur project mengikuti standar Laravel:
+# Project Structure
 
 ```bash
 web_skripsi/
+│
 ├── app/
+│   ├── Console/
+│   ├── Exceptions/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   ├── Models/
+│   ├── Notifications/
+│   └── Providers/
+│
 ├── bootstrap/
 ├── config/
 ├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
+│
 ├── public/
 ├── resources/
+│   ├── views/
+│   ├── js/
+│   └── css/
+│
 ├── routes/
+│   ├── web.php
+│   └── api.php
+│
 ├── storage/
 ├── tests/
 ├── vendor/
+├── .env
 ├── artisan
 ├── composer.json
-├── package.json
-└── vite.config.js
+└── package.json
 ```
 
 ---
 
-# 4. Penjelasan Folder
+# Installation Guide
 
-## app/
-
-Berisi seluruh business logic aplikasi.
-
-```bash
-app/
-├── Http/
-│   ├── Controllers/
-│   ├── Middleware/
-├── Models/
-├── Notifications/
-├── Services/
-```
-
-### Fungsi
-
-| Folder        | Fungsi                      |
-| ------------- | --------------------------- |
-| Controllers   | Mengatur request & response |
-| Models        | Relasi database             |
-| Middleware    | Validasi akses              |
-| Notifications | Sistem notifikasi           |
-| Services      | Business logic tambahan     |
-
----
-
-## bootstrap/
-
-Digunakan Laravel untuk bootstrap aplikasi.
-
----
-
-## config/
-
-Berisi konfigurasi Laravel.
-
-Contoh:
-
-| File            | Fungsi               |
-| --------------- | -------------------- |
-| app.php         | Konfigurasi aplikasi |
-| auth.php        | Authentication       |
-| database.php    | Database             |
-| filesystems.php | Storage upload       |
-| permission.php  | Role permission      |
-
----
-
-## database/
-
-Berisi migration, seeder, dan factory.
-
-```bash
-database/
-├── migrations/
-├── seeders/
-└── factories/
-```
-
-### Fungsi
-
-| Folder     | Fungsi             |
-| ---------- | ------------------ |
-| migrations | Struktur tabel     |
-| seeders    | Data awal          |
-| factories  | Dummy data testing |
-
----
-
-## public/
-
-Folder yang diakses browser.
-
-Berisi:
-
-* index.php
-* css
-* js
-* images
-* uploaded assets
-
----
-
-## resources/
-
-Frontend aplikasi.
-
-```bash
-resources/
-├── views/
-├── js/
-├── css/
-```
-
-### Fungsi
-
-| Folder | Fungsi         |
-| ------ | -------------- |
-| views  | Blade template |
-| js     | Javascript     |
-| css    | Styling        |
-
----
-
-## routes/
-
-Berisi seluruh route aplikasi.
-
-Umumnya:
-
-```bash
-routes/web.php
-```
-
-Berisi route:
-
-* authentication
-* dashboard
-* skripsi
-* sidang
-* dosen
-* mahasiswa
-* revisi
-* admin
-
----
-
-## storage/
-
-Digunakan untuk:
-
-* upload skripsi
-* file revisi
-* generated PDF
-* logs
-* cache
-
----
-
-# 5. Arsitektur Aplikasi
-
-Project menggunakan pola:
-
-```text
-MVC (Model View Controller)
-```
-
-Alur kerja:
-
-```text
-User
- ↓
-Route
- ↓
-Middleware
- ↓
-Controller
- ↓
-Model
- ↓
-Database
- ↓
-Blade View
- ↓
-Response
-```
-
----
-
-# 6. Authentication System
-
-Sistem login menggunakan Laravel Authentication.
-
-Fitur:
-
-* Login
-* Logout
-* Forgot password
-* Session management
-
-Middleware:
-
-```php
-Route::middleware('auth')
-```
-
-Artinya hanya user login yang dapat mengakses route tertentu.
-
----
-
-# 7. Role & Permission
-
-Project kemungkinan menggunakan role seperti:
-
-| Role        | Fungsi                   |
-| ----------- | ------------------------ |
-| admin       | Mengelola seluruh sistem |
-| koordinator | Mengatur sidang & dosen  |
-| lecturer    | Dosen pembimbing/penguji |
-| student     | Mahasiswa                |
-
-Biasanya menggunakan middleware:
-
-```php
-middleware('role:admin')
-```
-
-atau:
-
-```php
-middleware(['auth', 'role:lecturer'])
-```
-
----
-
-# 8. Modul Utama Sistem
-
-## Dashboard
-
-Menampilkan:
-
-* statistik skripsi
-* status mahasiswa
-* jadwal sidang
-* notifikasi
-
----
-
-## Manajemen Skripsi
-
-Fitur:
-
-* pengajuan judul
-* upload proposal
-* upload skripsi final
-* tracking status
-* revisi
-
----
-
-## Manajemen Sidang
-
-Fitur:
-
-* penjadwalan sidang
-* assign penguji
-* hasil sidang
-* generate BAP
-* upload revisi
-
----
-
-## Penilaian Sidang
-
-Fitur:
-
-* input nilai penguji
-* kalkulasi nilai akhir
-* status lulus/tidak
-
----
-
-## Manajemen User
-
-CRUD:
-
-* mahasiswa
-* dosen
-* admin
-
----
-
-# 9. Sistem Upload Dokumen
-
-Laravel storage digunakan untuk:
-
-* proposal
-* skripsi PDF
-* BAP
-* revisi
-* surat
-
-Command penting:
-
-```bash
-php artisan storage:link
-```
-
-Agar file dapat diakses publik melalui:
-
-```text
-/storage/
-```
-
----
-
-# 10. Generate PDF
-
-Project kemungkinan menggunakan:
-
-```bash
-barryvdh/laravel-dompdf
-```
-
-Digunakan untuk:
-
-* BAP sidang
-* laporan
-* berita acara
-* surat akademik
-
----
-
-# 11. Cara Install Project
-
-## Clone Repository
+## 1. Clone Repository
 
 ```bash
 git clone https://github.com/maggieelim/web_skripsi.git
-```
-
-Masuk folder:
-
-```bash
 cd web_skripsi
 ```
 
 ---
 
-## Install Dependency PHP
+## 2. Install Dependency PHP
 
 ```bash
 composer install
@@ -409,7 +109,7 @@ composer install
 
 ---
 
-## Install Frontend Dependency
+## 3. Install Dependency Frontend
 
 ```bash
 npm install
@@ -417,9 +117,9 @@ npm install
 
 ---
 
-## Copy Environment
+## 4. Copy Environment File
 
-Linux/Mac:
+Linux / Mac:
 
 ```bash
 cp .env.example .env
@@ -433,7 +133,7 @@ copy .env.example .env
 
 ---
 
-## Generate APP_KEY
+## 5. Generate Laravel Key
 
 ```bash
 php artisan key:generate
@@ -441,9 +141,11 @@ php artisan key:generate
 
 ---
 
-## Konfigurasi Database
+# Database Configuration
 
-Edit `.env`
+Edit file `.env`
+
+## MySQL Example
 
 ```env
 DB_CONNECTION=mysql
@@ -456,102 +158,239 @@ DB_PASSWORD=
 
 ---
 
-## Jalankan Migration
+# Run Migration
 
 ```bash
 php artisan migrate
 ```
 
-Jika ada seeder:
+Jika terdapat seeder:
 
 ```bash
 php artisan db:seed
 ```
 
+Atau:
+
+```bash
+php artisan migrate --seed
+```
+
 ---
 
-## Storage Link
+# Storage Configuration
+
+Jalankan command berikut:
 
 ```bash
 php artisan storage:link
 ```
 
+Agar file upload dapat diakses melalui browser.
+
+Contoh akses:
+
+```bash
+/storage/filename.pdf
+```
+
 ---
 
-## Jalankan Server
+# Run Application
+
+## Backend Laravel
 
 ```bash
 php artisan serve
 ```
 
-Akses:
+Default:
 
-```text
+```bash
 http://127.0.0.1:8000
 ```
 
 ---
 
-# 12. Frontend Build
+# Authentication
 
-Development:
+Sistem memiliki beberapa role user, misalnya:
+
+* Admin
+* Koordinator
+* Dosen
+* Mahasiswa
+
+Role dapat dicek pada:
+
+* migration users
+* model User
+* middleware role
+* controller auth
+
+---
+
+# Main Modules
+
+## 1. Authentication
+
+Fitur:
+
+* Login
+* Logout
+* Session management
+* Middleware authentication
+
+Lokasi:
 
 ```bash
-npm run dev
+app/Http/Controllers/Auth/
 ```
 
-Production:
+---
+
+## 2. Dashboard
+
+Menampilkan:
+
+* Statistik skripsi
+* Jadwal sidang
+* Status mahasiswa
+* Informasi revisi
+
+Lokasi:
 
 ```bash
-npm run build
+resources/views/dashboard/
 ```
 
 ---
 
-# 13. Struktur Database (Kemungkinan)
+## 3. Thesis Management
 
-Beberapa tabel utama:
+Fitur:
 
-| Tabel       | Fungsi        |
-| ----------- | ------------- |
-| users       | Data user     |
-| roles       | Role user     |
-| permissions | Permission    |
-| theses      | Data skripsi  |
-| examiners   | Penguji       |
-| supervisors | Pembimbing    |
-| schedules   | Jadwal sidang |
-| revisions   | Revisi        |
-| scores      | Nilai sidang  |
+* Pengajuan judul
+* Upload proposal
+* Upload skripsi
+* Monitoring progress
+* Validasi pembimbing
 
----
+Controller:
 
-# 14. Middleware yang Digunakan
-
-Kemungkinan middleware:
-
-| Middleware | Fungsi             |
-| ---------- | ------------------ |
-| auth       | Login protection   |
-| role       | Validasi role      |
-| verified   | Email verification |
-| guest      | Guest access       |
+```bash
+app/Http/Controllers/
+```
 
 ---
 
-# 15. Best Practice Development
+## 4. Examiner & Supervisor Management
+
+Fitur:
+
+* Assign dosen pembimbing
+* Assign dosen penguji
+* Monitoring bimbingan
+* Monitoring sidang
+
+Relasi:
+
+* Thesis belongsToMany Lecturers
+
+---
+
+## 5. Thesis Defense Management
+
+Fitur:
+
+* Penjadwalan sidang
+* Generate berita acara
+* Input hasil sidang
+* Upload revisi
+
+---
+
+## 6. Scoring & Evaluation
+
+Fitur:
+
+* Input nilai penguji
+* Kalkulasi nilai akhir
+* Status kelulusan
+* Rekap hasil sidang
+
+---
+
+## 7. Document Management
+
+Fitur:
+
+* Upload proposal
+* Upload skripsi final
+* Upload revisi
+* Download dokumen
+
+---
+
+# Routing
+
+Semua routing web terdapat di:
+
+```bash
+routes/web.php
+```
+
+Contoh:
+
+```php
+Route::middleware(['auth'])->group(function () {
+    Route::resource('thesis', ThesisController::class);
+});
+```
+
+---
+
+# Database Design
+
+## Main Tables
+
+| Table       | Function            |
+| ----------- | ------------------- |
+| users       | Menyimpan data user |
+| roles       | Hak akses user      |
+| theses      | Data skripsi        |
+| supervisors | Data pembimbing     |
+| examiners   | Data penguji        |
+| schedules   | Jadwal sidang       |
+| revisions   | Data revisi         |
+| scores      | Nilai sidang        |
+
+---
+
+# Important Laravel Commands
 
 ## Clear Cache
 
 ```bash
-php artisan optimize:clear
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
 ```
 
 ---
 
-## Queue Worker
+## Optimize
 
-Jika menggunakan notification/job:
+```bash
+php artisan optimize
+```
+
+---
+
+## Queue
+
+Jika menggunakan queue:
 
 ```bash
 php artisan queue:work
@@ -559,68 +398,228 @@ php artisan queue:work
 
 ---
 
-## Migration Fresh
+## Schedule
 
-Reset database:
+Cek scheduler:
 
 ```bash
-php artisan migrate:fresh --seed
+php artisan schedule:list
+```
+
+Run scheduler:
+
+```bash
+php artisan schedule:work
+```
+
+Cron Linux:
+
+```bash
+* * * * * php /path-to-project/artisan schedule:run >> /dev/null 2>&1
 ```
 
 ---
 
-# 16. Requirement Server
+# PDF Generation
 
-| Requirement | Versi  |
-| ----------- | ------ |
-| PHP         | >= 8.1 |
-| Composer    | Latest |
-| Node.js     | >= 18  |
-| MySQL       | >= 5.7 |
+Project dapat menggunakan package:
 
-Extension PHP:
+```bash
+barryvdh/laravel-dompdf
+```
 
-* mbstring
-* openssl
-* pdo_mysql
-* fileinfo
-* gd
-* zip
+Digunakan untuk:
+
+* Berita acara sidang
+* Laporan
+* Dokumen akademik
+* Rekap nilai
 
 ---
 
-# 17. Deployment Production
+# Common Errors
 
-Langkah umum:
+## 1. Vendor Missing
 
 ```bash
-composer install --optimize-autoloader --no-dev
-npm run build
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+composer install
 ```
+
+---
+
+## 2. APP_KEY Missing
+
+```bash
+php artisan key:generate
+```
+
+---
+
+## 3. Storage 404
+
+```bash
+php artisan storage:link
+```
+
+---
+
+## 4. Migration Error
 
 Pastikan:
 
-* `.env` production benar
-* APP_DEBUG=false
-* permission storage benar
+* database sudah dibuat
+* konfigurasi `.env` benar
 
 ---
 
-# 18. Kesimpulan
+## 5. Permission Error Linux
 
-`web_skripsi` merupakan sistem informasi skripsi berbasis Laravel yang dirancang untuk mendigitalisasi proses tugas akhir mahasiswa mulai dari pengajuan skripsi hingga sidang dan revisi.
+```bash
+chmod -R 775 storage bootstrap/cache
+```
 
-Project menggunakan arsitektur Laravel modern dengan:
+---
 
-* MVC pattern
-* role management
-* upload document system
-* PDF generation
-* middleware protection
-* authentication system
+# Deployment Guide
 
-Struktur repository sudah mengikuti standar Laravel sehingga mudah dikembangkan, dipelihara, dan dideploy.
+## Queue & Scheduler
 
+Gunakan:
+
+* Supervisor
+* Cronjob
+
+---
+
+## Web Server
+
+Disarankan:
+
+* Nginx
+* Apache
+
+Root folder:
+
+```bash
+/public
+```
+
+---
+
+# Coding Standard
+
+## Naming
+
+### Controller
+
+```bash
+ThesisController
+```
+
+### Model
+
+```bash
+Thesis
+```
+
+### Migration
+
+```bash
+create_theses_table
+```
+
+---
+
+# Best Practice
+
+## Saat Menambahkan Fitur Baru
+
+1. Buat migration
+2. Buat model
+3. Buat controller
+4. Tambahkan route
+5. Tambahkan view
+6. Tambahkan validation
+7. Testing
+
+---
+
+# Recommended Improvements
+
+## Backend
+
+* Gunakan Form Request Validation
+* Gunakan Service Layer
+* Tambahkan Repository Pattern
+
+## Security
+
+* CSRF Protection
+* Activity Logging
+* Rate Limiting
+
+## Performance
+
+* Redis cache
+* Queue optimization
+* Eager loading relation
+
+---
+
+# Contribution Guide
+
+## Branch Naming
+
+```bash
+feature/thesis-module
+fix/login-bug
+```
+
+---
+
+## Commit Convention
+
+```bash
+feat: add thesis revision feature
+fix: repair thesis upload validation
+refactor: optimize dashboard query
+```
+
+---
+
+# Future Development Suggestions
+
+## Potential Features
+
+* Email notification
+* Real-time status tracking
+* Digital signature
+* Automatic plagiarism integration
+
+---
+
+# Developer Notes
+
+## Important Files
+
+| File                 | Function           |
+| -------------------- | ------------------ |
+| routes/web.php       | Main route         |
+| app/Models           | Database models    |
+| app/Http/Controllers | Business logic     |
+| resources/views      | Frontend           |
+| config/app.php       | Application config |
+| .env                 | Environment config |
+
+---
+
+# Maintenance Checklist
+
+## Sebelum Deploy
+
+* [ ] Run test
+* [ ] Clear cache
+* [ ] Optimize app
+* [ ] Backup database
+* [ ] Check .env production
+* [ ] Run migration
