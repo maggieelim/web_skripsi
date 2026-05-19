@@ -14,7 +14,6 @@ class ThesisController extends Controller
     public function index()
     {
         $user = Auth::user();
-
         if ($user->hasRole('student')) {
 
             $student = $user->student;
@@ -31,6 +30,7 @@ class ThesisController extends Controller
 
         // admin
         if ($user->hasRole('admin')) {
+            $previewData = session('previewData');
 
             $theses = Thesis::with([
                 'student.user',
@@ -39,7 +39,7 @@ class ThesisController extends Controller
                 ->latest()
                 ->paginate(20);
 
-            return view('admin.thesis.index', compact('theses'));
+            return view('admin.thesis.index', compact('theses', 'previewData'));
         }
         if ($user->hasRole('lecturer')) {
 
@@ -161,7 +161,8 @@ class ThesisController extends Controller
     {
         Thesis::findOrFail($id)->delete();
 
-        return redirect()->back()->with('success', 'Thesis deleted successfully');
+        return redirect()->route('thesis.index')
+            ->with('success', 'Thesis deleted successfully');
     }
 
     public function assignExaminers(Request $request, string $thesisId)
@@ -171,6 +172,7 @@ class ThesisController extends Controller
             'examiners.*.lecturer_id' => 'required|exists:lecturers,id',
             'examiners.*.role' => 'required|in:penguji 1,penguji 2,ketua sidang',
             'date' => 'date|nullable',
+            'title' => 'required'
         ]);
 
         $thesis = Thesis::findOrFail($thesisId);
@@ -188,6 +190,8 @@ class ThesisController extends Controller
 
         if ($request->date) {
             $thesis->update([
+                'title' => $request->title,
+                'ruang' => $request->ruang,
                 'scheduled_date' => $request->date,
                 'status' => 'scheduled',
                 'invitation_email_sent' => false,

@@ -20,8 +20,8 @@ return [
         'items' => [
             [
                 'label' => 'All Thesis',
-                'route' => 'thesis.index',
-                'pattern' => 'thesis*',
+                'route' => 'admin.thesis.index',
+                'pattern' => 'admin/thesis*',
                 'icon' => 'fa-solid fa-book-open'
             ],
             [

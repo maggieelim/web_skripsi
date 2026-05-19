@@ -18,6 +18,7 @@ $chairman = $thesis->examiners->where('role', 'ketua sidang')->first();
         </div>
 
         <div class="card-body mt-0 pt-2">
+            {{-- INFORMASI MAHASISWA --}}
             <div class="mb-3 row">
                 <div class="col-md-8">
                     <label class="text-xs text-uppercase fw-bold mb-2">
@@ -38,18 +39,6 @@ $chairman = $thesis->examiners->where('role', 'ketua sidang')->first();
                         {{ $thesis->student->nim }}
                     </div>
                 </div>
-
-                {{-- <div class="col-md-4">
-                    <label class="text-xs text-uppercase fw-bold mb-2">
-                        Jenis Penelitian
-                    </label>
-
-                    <div>
-                        <span class="badge bg-gradient-info">
-                            {{ ucfirst($thesis->research_type) }}
-                        </span>
-                    </div>
-                </div> --}}
             </div>
 
             {{-- JUDUL --}}
@@ -61,56 +50,163 @@ $chairman = $thesis->examiners->where('role', 'ketua sidang')->first();
                 <p class="text-dark px-1 fw-semibold">
                     {{ $thesis->title }}
                 </p>
-
+            </div>
+            {{-- DOKUMEN --}}
+            <div class="mb-3">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <div class="p-3 border rounded bg-white">
-                            <label class="text-muted small text-uppercase d-block mb-1">
+                        <div class="p-2 border rounded bg-white">
+                            <a href="{{ $thesis->thesis_file }}" target="_blank"
+                                class=" text-uppercase text-decoration-underline fw-bold">
                                 Naskah Tugas Akhir
-                            </label>
-                            <a href="{{ $thesis->thesis_file }}" target="_blank" class="small">
-                                Download PDF →
                             </a>
                         </div>
                     </div>
 
                     <div class="col-md-4">
-                        <div class="p-3 border rounded bg-white">
-                            <label class="text-muted small text-uppercase d-block mb-1">
+                        <div class="p-2 border rounded bg-white">
+                            <a href="{{ $thesis->manuscript_file }}" target="_blank"
+                                class=" text-uppercase text-decoration-underline fw-bold">
                                 Manuskrip
-                            </label>
-                            <a href="{{ $thesis->manuscript_file }}" target="_blank" class="small">
-                                Download File →
                             </a>
                         </div>
                     </div>
 
                     <div class="col-md-4">
-                        <div class="p-3 border rounded bg-white">
-                            <label class="text-muted small text-uppercase d-block mb-1">
+                        <div class="p-2 border rounded bg-white">
+                            <a href="{{ $thesis->presentation_video }}" target="_blank"
+                                class=" text-uppercase text-decoration-underline fw-bold">
                                 Video Presentasi
-                            </label>
-                            <a href="{{ $thesis->presentation_video }}" target="_blank" class="small">
-                                Tonton Video →
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {{-- SIMILARITY --}}
+            <div class="mb-3">
+                <h6 class="fw-bold mb-3">
+                    Similarity
+                </h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-2 border rounded bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class=" text-muted text-uppercase fw-bold ">
+                                    Similarity Skripsi
+                                </div>
+                                <div class="fw-bold text-dark">
+                                    {{ $thesis->thesis_similarity ?? '-' }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="p-2 border rounded bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class=" text-muted text-uppercase fw-bold ">
+                                    Similarity Manuskrip
+                                </div>
+                                <div class="fw-bold text-dark">
+                                    {{ $thesis->manuscript_similarity ?? '-' }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- PUBLIKASI --}}
+            <div class="mb-2">
+
+                <h6 class="fw-bold mb-3">
+                    Informasi Publikasi
+                </h6>
+                <div class="row g-3">
+
+                    <div class="col-md-3">
+
+                        <div class="p-3 border rounded bg-white">
+
+                            <label class="text-muted small text-uppercase d-block mb-1">
+                                Status
+                            </label>
+
+                            <div class="fw-semibold text-dark">
+
+                                {{ $thesis->publication_status ?? '-' }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="p-3 border rounded bg-white">
+
+                            <label class="text-muted small text-uppercase d-block mb-1">
+                                Nama Jurnal
+                            </label>
+
+                            <div class="fw-semibold text-dark">
+
+                                {{ $thesis->journal_name ?? '-' }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="p-3 border rounded bg-white">
+
+                            <label class="text-muted small text-uppercase d-block mb-1">
+                                Peringkat
+                            </label>
+
+                            <div class="fw-semibold text-dark">
+
+                                {{ $thesis->journal_rank ?? '-' }}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
 
     <div class="card border-0 shadow-sm col-md-4">
         <form action="{{ route('admin.thesis.assign-examiners', $thesis->id) }}" method="POST">
             @csrf
 
-            <div class="card-body pt-4">
+            <div class="card-body pt-3">
                 {{-- TIM PENGUJI --}}
                 <h6 class="mb-0 fw-bold">
                     Tim Penguji
                 </h6>
-                <div class="row g-3">
+                <div class="row g-2">
                     <div class="col-md-12">
+                        <label class="form-label fw-bold">
+                            Judul
+                        </label>
+
+                        <textarea name="title" class="form-control" rows="2"
+                            placeholder="Judul">{{ old('title', $thesis->title ?? '') }}</textarea>
+                    </div>
+                    <div class="col-md-8">
                         <label class="form-label fw-bold">
                             Tanggal Sidang
                         </label>
@@ -119,7 +215,13 @@ $chairman = $thesis->examiners->where('role', 'ketua sidang')->first();
                             value="{{ old('date', $thesis->scheduled_date ? \Carbon\Carbon::parse($thesis->scheduled_date)->format('Y-m-d\TH:i') : '') }}"
                             placeholder="Tanggal Sidang">
                     </div>
-
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">
+                            Ruang
+                        </label>
+                        <input type="text" name="ruang" class="form-control" value="{{ old('ruang', $thesis->ruang) }}"
+                            placeholder="Ruang">
+                    </div>
                     {{-- PENGUJI 1 --}}
                     <div class="col-md-12">
                         <label class="form-label fw-bold">

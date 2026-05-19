@@ -10,6 +10,7 @@ class Thesis extends Model
     use HasFactory;
     protected $fillable = [
         'student_id',
+        'semester_id',
         'title',
         'scheduled_date',
         'research_type',
@@ -23,8 +24,18 @@ class Thesis extends Model
         'final_result',
         'bap_file',
         'bap_sent_at',
+        'ruang',
+        'thesis_similarity',
+        'manuscript_similarity',
+        'publication_status',
+        'journal_name',
+        'journal_rank',
     ];
 
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
     public function student()
     {
         return $this->belongsTo(Student::class);

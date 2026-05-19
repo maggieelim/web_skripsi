@@ -12,7 +12,7 @@
                 </h6>
                 <small class="text-muted">NIM: {{ $thesis->student->nim }}</small>
             </div>
-            <span class="badge bg-gradient-info py-1">{{ ucfirst($thesis->research_type) }}</span>
+            <span class="badge bg-gradient-info">{{ ucfirst($thesis->research_type) }}</span>
         </div>
 
         <hr class="my-1">

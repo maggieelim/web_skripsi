@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\ThesisTemplateExport;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\{
@@ -12,6 +13,7 @@ use App\Http\Controllers\{
     SemesterController,
     SessionsController,
     ThesisController,
+    ThesisImportController,
     ThesisInvitationController,
     ThesisResultController,
     UserController
@@ -179,6 +181,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         | THESIS MANAGEMENT
         |--------------------------------------------------------------------------
         */
+    Route::resource('thesis', ThesisController::class);
 
     Route::prefix('thesis')->name('thesis.')->group(function () {
 
@@ -196,6 +199,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             '{thesis}/send-email',
             [ThesisInvitationController::class, 'send']
         )->name('send-email');
+
+        Route::post('/admin/thesis/import', [ThesisImportController::class, 'import'])
+            ->name('import');
+
+        Route::post('/thesis/import/preview', [ThesisImportController::class, 'preview'])
+            ->name('import.preview');
+
+        Route::post('/thesis/import/store', [ThesisImportController::class, 'store'])
+            ->name('import.store');
+
+        Route::get('/thesis/template', function () {
+            return Excel::download(
+                new ThesisTemplateExport,
+                'template_thesis.xlsx'
+            );
+        })->name('download');
     });
 
     /*

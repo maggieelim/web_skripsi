@@ -6,17 +6,25 @@ di tempat
 <br><br>
 Dengan hormat,
 <br>
-Bersama dengan ini kami memohon bantuannya sebagai {{ ucfirst($examiner->role) }} untuk melakukan penilaian tugas akhir
-dari mahasiswa Fakultas Kedokteran Universitas Tarumanagara melalui prosedur Desk review dengan identitas sebagai
-berikut:
+Bersama ini kami mohon kesediaan menjadi {{ ucfirst($examiner->role) }} Sidang Skripsi pada:
 <br>
-Nama Mahasiswa yang diuji: {{ $thesis->student->user->name }}
+Waktu:
+{{ \Carbon\Carbon::parse($thesis->scheduled_date)
+->locale('id')
+->translatedFormat('l, d F Y H:i') }}
+<br>
+Lokasi: {{ $thesis->ruang }}
+<br><br>
+
+Terhadap Tugas Akhir mahasiswa dengan identitas:
+<br>
+Nama mahasiswa: {{ $thesis->student->user->name }}
 <br>
 NIM: {{ $thesis->student->nim }}
 <br>
 Judul Tugas Akhir: {{ $thesis->title }}
 <br><br>
-Berikut kami lampirkan dokumen dari tugas akhir mahasiswa yang bersangkutan:
+Berikut dokumen tugas akhir mahasiswa yang bersangkutan:
 <br>
 Naskah Tugas Akhir:
 <br>
@@ -30,7 +38,28 @@ Video Presentasi:
 <br>
 {{ $thesis->presentation_video }}
 <br><br>
-Untuk proses penilaian dapat dilakukan melalui link berikut:
+Skor Similaritas Tugas Akhir:
+<br>
+{{ $thesis->thesis_similarity }}
+<br><br>
+Skor Similaritas Manuskrip:
+<br>
+{{ $thesis->manuscript_similarity }}
+<br><br>
+Status Publikasi:
+<br>
+{{ $thesis->publication_status }}
+<br><br>
+Nama Jurnal:
+<br>
+{{ $thesis->journal_name }}
+<br><br>
+Peringkat Jurnal:
+<br>
+{{ $thesis->journal_rank }}
+<br><br>
+
+Proses penilaian dilakukan melalui link berikut:
 <br>
 {{ url('/assessment/'.$thesis->id) }}
 <br><br>

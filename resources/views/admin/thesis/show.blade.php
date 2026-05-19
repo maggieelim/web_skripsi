@@ -8,9 +8,23 @@
             <h5 class="fw-semibold mb-1">
                 {{ $thesis->student->user->name }}
             </h5>
-            <span class="badge bg-info px-3 py-2">
-                {{ ucfirst($thesis->research_type) }}
-            </span>
+            <div>
+                <span class="badge bg-info px-3 py-2">
+                    {{ ucfirst($thesis->research_type) }}
+                </span>
+                @if ($thesis->status ==="scheduled")
+                @role('admin')
+                <form action="{{ route('thesis.destroy', $thesis->id) }}" method="POST" class="d-inline"
+                    onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm bg-gradient-danger m-1 p-2 px-3">
+                        Delete
+                    </button>
+                </form>
+                @endrole
+                @endif
+            </div>
         </div>
     </div>
 
@@ -123,7 +137,124 @@
                 </div>
             </div>
         </div>
+        {{-- SIMILARITY --}}
+        <div class="mb-3">
+            <h6 class="fw-bold mb-2">
+                Similarity
+            </h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="p-2 border rounded bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class=" text-muted text-uppercase fw-bold ">
+                                Similarity Skripsi
+                            </div>
+                            <div class="fw-bold text-dark">
+                                {{ $thesis->thesis_similarity ?? '-' }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="col-md-6">
+
+                    <div class="p-2 border rounded bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class=" text-muted text-uppercase fw-bold ">
+                                Similarity Manuskrip
+                            </div>
+                            <div class="fw-bold text-dark">
+                                {{ $thesis->manuscript_similarity ?? '-' }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- PUBLIKASI --}}
+        <div class="mb-2">
+
+            <h6 class="fw-bold mb-3">
+                Informasi Publikasi
+            </h6>
+            <div class="row g-3">
+
+                <div class="col-md-3">
+
+                    <div class="p-3 border rounded bg-white">
+
+                        <label class="text-muted small text-uppercase d-block mb-1">
+                            Status
+                        </label>
+
+                        <div class="fw-semibold text-dark">
+
+                            {{ $thesis->publication_status ?? '-' }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="p-3 border rounded bg-white">
+
+                        <label class="text-muted small text-uppercase d-block mb-1">
+                            Nama Jurnal
+                        </label>
+
+                        <div class="fw-semibold text-dark">
+
+                            {{ $thesis->journal_name ?? '-' }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div class="p-3 border rounded bg-white">
+
+                        <label class="text-muted small text-uppercase d-block mb-1">
+                            Peringkat
+                        </label>
+
+                        <div class="fw-semibold text-dark">
+
+                            {{ $thesis->journal_rank ?? '-' }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @php
+
+        $currentLecturer = auth()->user()?->lecturer;
+
+        $isChairman = $thesis->examiners
+        ->where('role', 'ketua sidang')
+        ->where('lecturer_id', $currentLecturer?->id)
+        ->isNotEmpty();
+
+        $isSupervisor = $thesis->examiners
+        ->where('role', 'penguji 2')
+        ->where('lecturer_id', $currentLecturer?->id)
+        ->isNotEmpty();
+
+        $isAdmin = auth()->user()->hasRole('admin');
+
+        @endphp
         @if (!in_array($thesis->status, ['draft', 'scheduled', 'submitted']))
         {{-- HASIL SIDANG --}}
         <div class="mb-2">
@@ -132,6 +263,8 @@
             </h6>
 
             <div class="row g-3 mb-3">
+                @if($isChairman || auth()->user()->hasRole('admin'))
+
                 {{-- NILAI AKHIR --}}
                 <div class="col-md-4">
                     <div class="border rounded p-3 text-center bg-white h-100">
@@ -144,6 +277,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-md-4">
                     <div class="border rounded p-3 text-center bg-white h-100">
                         <div class="text-muted small mb-2">
@@ -165,24 +299,33 @@
                         </div>
 
                         @if ($thesis->bap_file)
+
                         <a href="{{ asset('storage/' . $thesis->bap_file) }}" target="_blank"
                             class="btn btn-sm bg-gradient-dark">
+
                             Download BAP
                         </a>
+
                         @else
+
                         <div class="text-muted">
                             Belum tersedia
                         </div>
+
                         @endif
 
                     </div>
                 </div>
+
+                @endif
             </div>
 
             <div class="row g-3 mb-3">
+
                 @foreach ($thesis->examiners->sortBy('role') as $examiner)
 
                 @php
+
                 $score = $examiner->lecturer->supervisorScores
                 ->where('thesis_id', $thesis->id)
                 ->first();
@@ -190,83 +333,105 @@
                 $revisionNote = $thesis->revisionNotes
                 ->where('lecturer_id', $examiner->lecturer_id)
                 ->first();
+
+                $canViewScore =
+                $isAdmin ||
+                $isChairman ||
+                $examiner->lecturer_id === $currentLecturer?->id;
+
+                $canViewRevision =
+                $isAdmin ||
+                $isChairman ||
+                $isSupervisor ||
+                $examiner->lecturer_id === $currentLecturer?->id;
+
                 @endphp
 
+                @if($canViewScore || $canViewRevision)
+
                 <div class="col-md-4">
+
                     <div class="p-3 border rounded bg-white h-100">
+
                         <div class="d-flex align-items-center justify-content-between">
+
                             <div>
+
                                 <div class="text-muted small mb-1">
                                     {{ Str::ucfirst($examiner->role) }}
                                 </div>
 
-                                {{-- NAMA DOSEN --}}
                                 <div class="fw-medium mb-2">
                                     {{ $examiner->lecturer->user->name }},
                                     {{ $examiner->lecturer->gelar }}
                                 </div>
+
                             </div>
+
                             {{-- SCORE --}}
+                            @if($canViewScore)
+
                             <div class="fw-bold h4 mb-3">
                                 {{ $score?->score ?? '-' }}
                             </div>
+
+                            @endif
+
                         </div>
+
                         {{-- REVISION NOTE --}}
-                        @if($revisionNote)
+                        @if($canViewRevision && $revisionNote)
+
                         <div class="border-top pt-2">
 
                             <div class="mb-2">
-                                <div class="small fw-bold">
+
+                                <div class="small text-dark fw-bold">
                                     Substansi
                                 </div>
-                                @if($revisionNote->substance_note)
+
                                 <div class="small text-dark">
-                                    {{ $revisionNote->substance_note }}
+                                    {{ $revisionNote->substance_note ?: '-' }}
                                 </div>
-                                @else
-                                <div class="small text-dark">
-                                    -
-                                </div>
-                                @endif
+
                             </div>
 
                             <div class="mb-2">
-                                <div class="small fw-bold">
+
+                                <div class="small text-dark fw-bold">
                                     Metodologi
                                 </div>
-                                @if($revisionNote->methodology_note)
+
                                 <div class="small text-dark">
-                                    {{ $revisionNote->methodology_note }}
+                                    {{ $revisionNote->methodology_note ?: '-' }}
                                 </div>
-                                @else
-                                <div class="small text-dark">
-                                    -
-                                </div>
-                                @endif
+
                             </div>
 
                             <div>
-                                <div class="small fw-bold">
+
+                                <div class="small text-dark fw-bold">
                                     Teknis Penulisan
                                 </div>
-                                @if($revisionNote->writing_note)
+
                                 <div class="small text-dark">
-                                    {{ $revisionNote->writing_note }}
+                                    {{ $revisionNote->writing_note ?: '-' }}
                                 </div>
-                                @else
-                                <div class="small text-dark">
-                                    -
-                                </div>
-                                @endif
+
                             </div>
 
                         </div>
+
                         @endif
 
                     </div>
+
                 </div>
 
+                @endif
+
                 @endforeach
+
             </div>
         </div>
         @endif

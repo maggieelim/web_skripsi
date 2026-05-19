@@ -1,6 +1,7 @@
 @extends('layouts.user_type.auth')
-
 @section('content')
+@include('admin.thesis.preview')
+
 <div class="row">
     <div class="col-12">
         <div class="card mb-4">
@@ -14,6 +15,9 @@
                     <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
                         data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
                         <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <button class="btn btn-sm bg-gradient-primary" data-bs-toggle="modal" data-bs-target="#importModal">
+                        Import Excel
                     </button>
                 </div>
             </div>
@@ -36,39 +40,37 @@
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
                     <table class="table align-items-center mb-0">
-                        @php
-                        // Ambil semua parameter filter aktif, kecuali sort, dir, dan pagination
-                        $filters = request()->except(['sort', 'dir', 'page']);
-                        @endphp
 
                         <thead>
                             <tr>
                                 <th class="text-center text-uppercase text-dark text-sm font-weight-bolder">
-                                    Student</th>
+                                    Mahasiswa</th>
                                 <th class="text-center text-uppercase text-dark text-sm font-weight-bolder">
-                                    Scheduled Date</th>
+                                    Tanggal</th>
                                 <th class="text-center text-uppercase text-dark text-sm font-weight-bolder">
-                                    Examiner</th>
+                                    Ketua Sidang</th>
                                 <th class="text-center text-uppercase text-dark text-sm font-weight-bolder">
-                                    Status</th>
+                                    Pembimbing</th>
+                                <th class="text-center text-uppercase text-dark text-sm font-weight-bolder">
+                                    Penguji</th>
                                 <th class="text-center text-uppercase text-dark text-sm font-weight-bolder">
                                     Action</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            @foreach ($theses as $thesis)
+                            @forelse ($theses as $thesis)
                             <tr>
 
                                 {{-- STUDENT --}}
-                                <td class="align-middle px-3">
+                                <td class="align-middle ps-2">
                                     <div class="d-flex flex-column">
                                         <span class="fw-bold text-dark text-sm">
-                                            {{ $thesis->student->user->name }}
+                                            {{ $thesis->student?->user?->name ?? '-' }}
                                         </span>
 
                                         <span class="text-muted fw-semibold text-sm">
-                                            {{ $thesis->student->nim }}
+                                            {{ $thesis->student?->nim ?? '-' }}
                                         </span>
                                     </div>
                                 </td>
@@ -81,21 +83,28 @@
                                 </td>
 
                                 {{-- EXAMINER --}}
+
                                 <td class="align-middle fw-bold text-center text-sm">
-                                    @if($thesis->examiners->count() == 3)
-                                    <span class="badge bg-info p-2">
-                                        Assigned
-                                    </span>
-                                    @else
-                                    <span class="badge bg-danger">
-                                        Not Assigned
-                                    </span>
-                                    @endif
+                                    {{ optional(
+                                    $thesis->examiners
+                                    ->where('role', 'ketua sidang')
+                                    ->first()
+                                    )->lecturer?->user?->name ?? '-' }}
                                 </td>
 
-                                {{-- STATUS --}}
                                 <td class="align-middle fw-bold text-center text-sm">
-                                    {{ ucfirst($thesis->status) }}
+                                    {{ optional(
+                                    $thesis->examiners
+                                    ->where('role', 'penguji 2')
+                                    ->first()
+                                    )->lecturer?->user?->name ?? '-' }}
+                                </td>
+                                <td class="align-middle fw-bold text-center text-sm">
+                                    {{ optional(
+                                    $thesis->examiners
+                                    ->where('role', 'penguji 1')
+                                    ->first()
+                                    )->lecturer?->user?->name ?? '-' }}
                                 </td>
 
                                 <td class="align-middle text-center">
@@ -106,10 +115,10 @@
                                         <i class="fas fa-info-circle"></i>
                                     </a>
 
-                                    {{-- Assign --}}
+                                    {{-- ASSIGN --}}
                                     <a href="{{ route('admin.thesis.assign', $thesis->id) }}"
                                         class="btn bg-gradient-warning m-1 p-2 px-3" title="assign">
-                                        <i class="fas fa-user-plus me-1"></i> Assign
+                                        <i class="fas fa-user-plus"></i>
                                     </a>
                                     @if($thesis->status == 'scheduled')
                                     @if(!$thesis->invitation_email_sent)
@@ -119,8 +128,8 @@
                                         @csrf
 
                                         <button type="submit" class="btn btn-primary m-1 px-3 p-2"> <i
-                                                class="fa-solid fa-envelope me-1"></i>
-                                            Send
+                                                class="fa-solid fa-envelope"></i>
+                                            {{-- Send --}}
                                         </button>
 
                                     </form>
@@ -131,14 +140,19 @@
                                     @endif
                                     @else
                                     @endif
-
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    Data tidak ditemukan
+                                </td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
 
-                    {{-- Pagination --}}
+                    {{-- PAGINATION --}}
                     <div class="d-flex justify-content-center mt-3">
                         <x-pagination :paginator="$theses" />
                     </div>
@@ -147,4 +161,36 @@
         </div>
     </div>
 </div>
+
+{{-- IMPORT MODAL --}}
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('admin.thesis.import.preview') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Import Excel
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <input type="file" name="file" class="form-control" accept=".xlsx,.xls,.csv" required>
+                </div>
+
+                <div class="modal-footer">
+                    <a href="{{ route('admin.thesis.download') }}" class="btn btn-primary btn-sm">
+                        Template
+                    </a>
+                    <button type="submit" class="btn btn-sm bg-gradient-info">
+                        Preview Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
