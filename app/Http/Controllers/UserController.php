@@ -260,7 +260,7 @@ class UserController extends Controller
             $rules['nidn'] = 'nullable|string';
             $rules['roles'] = 'required|exists:roles,name';
             $rules['strata'] = 'required';
-            $rules['gelar'] = 'nullable|string|max:50';
+            $rules['gelar'] = 'nullable|string|max:100';
             $rules['tipe_dosen'] = 'required|in:Asdos,CDT,DT,DTT';
             $rules['min_sks'] = 'nullable|integer|min:0';
             $rules['max_sks'] = 'nullable|integer|min:0';
