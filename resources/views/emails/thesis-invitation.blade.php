@@ -40,11 +40,11 @@ Video Presentasi:
 <br><br>
 Skor Similaritas Tugas Akhir:
 <br>
-{{ $thesis->thesis_similarity }}
+{{ $thesis->thesis_similarity*100 }}%
 <br><br>
 Skor Similaritas Manuskrip:
 <br>
-{{ $thesis->manuscript_similarity }}
+{{ $thesis->manuscript_similarity*100 }}%
 <br><br>
 Status Publikasi:
 <br>
