@@ -150,7 +150,7 @@
                                 Similarity Skripsi
                             </div>
                             <div class="fw-bold text-dark">
-                                {{ $thesis->thesis_similarity ?? '-' }}%
+                                {{ rtrim(rtrim(number_format($thesis->thesis_similarity * 100, 2), '0'), '.') }}%
                             </div>
                         </div>
                     </div>
@@ -164,7 +164,7 @@
                                 Similarity Manuskrip
                             </div>
                             <div class="fw-bold text-dark">
-                                {{ $thesis->manuscript_similarity ?? '-' }}%
+                                {{ rtrim(rtrim(number_format($thesis->manuscript_similarity * 100, 2), '0'), '.') }}%
                             </div>
                         </div>
                     </div>

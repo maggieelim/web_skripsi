@@ -96,7 +96,7 @@ $chairman = $thesis->examiners->where('role', 'ketua sidang')->first();
                                     Similarity Skripsi
                                 </div>
                                 <div class="fw-bold text-dark">
-                                    {{ $thesis->thesis_similarity ?? '-' }}%
+                                    {{ rtrim(rtrim(number_format($thesis->thesis_similarity * 100, 2), '0'), '.') }}%
                                 </div>
                             </div>
                         </div>
@@ -110,7 +110,8 @@ $chairman = $thesis->examiners->where('role', 'ketua sidang')->first();
                                     Similarity Manuskrip
                                 </div>
                                 <div class="fw-bold text-dark">
-                                    {{ $thesis->manuscript_similarity ?? '-' }}%
+                                    {{ rtrim(rtrim(number_format($thesis->manuscript_similarity * 100, 2), '0'), '.')
+                                    }}%
                                 </div>
                             </div>
                         </div>
