@@ -147,6 +147,8 @@ class ThesisImportController extends Controller
                 ->with('error', 'Data import tidak ditemukan');
         }
 
+        $activeSemester = SemesterService::active();
+
         foreach ($rows->skip(1) as $row) {
 
             $student = Student::where(
@@ -192,20 +194,6 @@ class ThesisImportController extends Controller
             ) {
                 continue;
             }
-
-            // mencegah duplicate thesis
-            $existingThesis = Thesis::where(
-                'student_id',
-                $student->id
-            )
-                ->where('title', trim($row[1]))
-                ->first();
-
-            if ($existingThesis) {
-                continue;
-            }
-
-            $activeSemester = SemesterService::active();
 
             $thesis = Thesis::updateOrCreate(
                 [
