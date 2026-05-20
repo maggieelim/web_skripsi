@@ -195,6 +195,32 @@ class ThesisImportController extends Controller
                 continue;
             }
 
+            $lecturerIds = [
+                $ketuaSidang->id,
+                $dospem->id,
+                $penguji->id,
+            ];
+
+            if (count($lecturerIds) !== count(array_unique($lecturerIds))) {
+                continue;
+            }
+
+            $scheduledDate = null;
+
+            if (!empty($row[9])) {
+
+                try {
+
+                    $scheduledDate = Carbon::createFromFormat(
+                        'd/m/Y H.i',
+                        trim($row[9])
+                    );
+                } catch (\Exception $e) {
+
+                    continue;
+                }
+            }
+
             $thesis = Thesis::updateOrCreate(
                 [
                     'student_id' => $student->id,
@@ -206,11 +232,9 @@ class ThesisImportController extends Controller
                     'thesis_file' => trim($row[3]),
                     'manuscript_file' => trim($row[4]),
                     'presentation_video' => trim($row[5]),
-                    'scheduled_date' => Carbon::createFromFormat(
-                        'd/m/Y H.i',
-                        trim($row[9])
-                    ),
+                    'scheduled_date' => $scheduledDate,
                     'status' => 'scheduled',
+                    'invitation_email_sent' => false,
                     'ruang' => trim($row[10] ?? ''),
                     'thesis_similarity' => $row[11] ?? null,
                     'manuscript_similarity' => $row[12] ?? null,
@@ -220,35 +244,29 @@ class ThesisImportController extends Controller
                 ]
             );
 
-            ThesisExaminer::updateOrCreate(
-                [
-                    'thesis_id' => $thesis->id,
-                    'role' => 'ketua sidang',
-                ],
-                [
-                    'lecturer_id' => $ketuaSidang->id,
-                ]
-            );
+            // hapus examiner lama agar tidak duplicate
+            ThesisExaminer::where(
+                'thesis_id',
+                $thesis->id
+            )->delete();
 
-            ThesisExaminer::updateOrCreate(
-                [
-                    'thesis_id' => $thesis->id,
-                    'role' => 'penguji 1',
-                ],
-                [
-                    'lecturer_id' => $penguji->id,
-                ]
-            );
+            ThesisExaminer::create([
+                'thesis_id' => $thesis->id,
+                'lecturer_id' => $ketuaSidang->id,
+                'role' => 'ketua sidang',
+            ]);
 
-            ThesisExaminer::updateOrCreate(
-                [
-                    'thesis_id' => $thesis->id,
-                    'role' => 'penguji 2',
-                ],
-                [
-                    'lecturer_id' => $dospem->id,
-                ]
-            );
+            ThesisExaminer::create([
+                'thesis_id' => $thesis->id,
+                'lecturer_id' => $penguji->id,
+                'role' => 'penguji 1',
+            ]);
+
+            ThesisExaminer::create([
+                'thesis_id' => $thesis->id,
+                'lecturer_id' => $dospem->id,
+                'role' => 'penguji 2',
+            ]);
         }
 
         session()->forget([

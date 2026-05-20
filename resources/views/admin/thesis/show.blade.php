@@ -64,8 +64,8 @@
                     </label>
 
                     <span class="fw-medium">
-                        {{ $supervisor?->lecturer?->user?->name ?? 'Belum ditentukan' }}, {{
-                        $supervisor->lecturer->gelar }}
+                        {{ $supervisor?->lecturer?->user?->name ?? '-' }}
+                        {{ $supervisor?->lecturer?->gelar ? ', ' . $supervisor->lecturer->gelar : '' }}
                     </span>
                 </div>
             </div>
@@ -85,7 +85,8 @@
                             {{ Str::ucfirst($examiner->role) }}
                         </div>
                         <div class="fw-medium">
-                            {{ $examiner->lecturer->user->name }}, {{ $examiner->lecturer->gelar }}
+                            {{ $examiner?->lecturer?->user?->name ?? '-' }}
+                            {{ $examiner?->lecturer?->gelar ? ', ' . $examiner->lecturer->gelar : '' }}
                         </div>
                     </div>
                 </div>
@@ -150,8 +151,9 @@
                                 Similarity Skripsi
                             </div>
                             <div class="fw-bold text-dark">
-                                {{ rtrim(rtrim(number_format($thesis->thesis_similarity * 100, 2), '0'), '.') }}%
-                            </div>
+                                {{ $thesis->thesis_similarity !== null
+                                ? rtrim(rtrim(number_format($thesis->thesis_similarity * 100, 2), '0'), '.') . '%'
+                                : '-' }} </div>
                         </div>
                     </div>
                 </div>
@@ -164,8 +166,9 @@
                                 Similarity Manuskrip
                             </div>
                             <div class="fw-bold text-dark">
-                                {{ rtrim(rtrim(number_format($thesis->manuscript_similarity * 100, 2), '0'), '.') }}%
-                            </div>
+                                {{ $thesis->manuscript_similarity !== null
+                                ? rtrim(rtrim(number_format($thesis->manuscript_similarity * 100, 2), '0'), '.') . '%'
+                                : '-' }} </div>
                         </div>
                     </div>
                 </div>
@@ -326,9 +329,9 @@
 
                 @php
 
-                $score = $examiner->lecturer->supervisorScores
-                ->where('thesis_id', $thesis->id)
-                ->first();
+                $score = $examiner?->lecturer?->supervisorScores
+                ?->where('thesis_id', $thesis->id)
+                ?->first();
 
                 $revisionNote = $thesis->revisionNotes
                 ->where('lecturer_id', $examiner->lecturer_id)

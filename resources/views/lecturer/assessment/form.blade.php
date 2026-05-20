@@ -157,14 +157,6 @@
 
     </div>
 
-    <div class="text-end mt-4">
-
-        <button type="submit" class="btn bg-gradient-success">
-            Submit Final Penilaian
-        </button>
-
-    </div>
-
     @endif
     {{-- PAGINATION --}}
     <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
@@ -174,6 +166,11 @@
             {{ $i }}
             </a>
             @endfor
+    </div>
+    <div class="text-end">
+        <button type="submit" class="btn bg-gradient-success">
+            Submit Final Penilaian
+        </button>
     </div>
     <div class="text-end">
         <span id="save-status" class="text-sm text-success fw-bold">

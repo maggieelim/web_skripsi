@@ -110,7 +110,7 @@
                                 <td class="align-middle text-center">
 
                                     {{-- SHOW --}}
-                                    <a href="{{ route('thesis.show', $thesis->id) }}"
+                                    <a href="{{ route('admin.thesis.show', $thesis->id) }}"
                                         class="btn bg-gradient-secondary m-1 p-2 px-3" title="Info">
                                         <i class="fas fa-info-circle"></i>
                                     </a>

@@ -144,9 +144,9 @@ class AssessmentController extends Controller
             ]
         );
 
-        $thesis->update([
-            'status' => 'ongoing'
-        ]);
+        // $thesis->update([
+        //     'status' => 'ongoing'
+        // ]);
         return response()->json([
             'success' => true,
             'message' => 'Score tersimpan'
@@ -184,12 +184,15 @@ class AssessmentController extends Controller
             ->count();
 
         if ($filledScores < $requiredRubrics) {
-
             return back()->with(
                 'error',
                 'Semua rubric harus diisi'
             );
         }
+
+        $thesis->update([
+            'status' => 'ongoing'
+        ]);
 
         $request->validate([
             'substance_note' => 'nullable|string',
