@@ -3,43 +3,175 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lecturer;
+use App\Models\Semester;
 use App\Models\SupervisorScore;
 use App\Models\Thesis;
+use App\Services\SemesterService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpWord\PhpWord;
 
 class ThesisResultController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $theses = Thesis::with([
-            'student.user',
-        ])
-            ->whereIn('status', ['revision', 'passed', 'failed', 'completed', 'assessed'])
-            ->latest()
-            ->paginate(20);
+        $activeSemester = SemesterService::active();
 
-        return view('admin.thesis.results', compact('theses'));
+        $semesterId = $request->semester_id
+            ?? $activeSemester?->id;
+
+        $query = Thesis::with([
+            'student.user',
+            'semester.academicYear',
+            'examiners',
+        ])
+            ->whereIn('status', [
+                'revision',
+                'passed',
+                'failed',
+                'completed',
+                'assessed'
+            ])
+            ->where('semester_id', $semesterId);
+
+        // FILTER STATUS
+        if ($request->filled('status')) {
+
+            $query->where(
+                'status',
+                $request->status
+            );
+        }
+
+        // FILTER NIM
+        if ($request->filled('nim')) {
+
+            $query->whereHas('student', function ($q) use ($request) {
+
+                $q->where(
+                    'nim',
+                    'like',
+                    '%' . $request->nim . '%'
+                );
+            });
+        }
+
+        // FILTER NAMA
+        if ($request->filled('name')) {
+
+            $query->whereHas('student.user', function ($q) use ($request) {
+
+                $q->where(
+                    'name',
+                    'like',
+                    '%' . $request->name . '%'
+                );
+            });
+        }
+
+        $theses = $query
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        $semesters = Semester::with('academicYear')
+            ->latest()
+            ->get();
+
+        return view('admin.thesis.results', compact('theses', 'semesters', 'activeSemester', 'semesterId'));
     }
 
-    public function indexLecturer()
+    public function indexLecturer(Request $request)
     {
         $user = Auth::user();
-        $lecturer = Lecturer::where('user_id', $user->id)->firstOrFail();
-        $theses = Thesis::with([
+
+        $lecturer = Lecturer::where(
+            'user_id',
+            $user->id
+        )->firstOrFail();
+
+        $activeSemester = SemesterService::active();
+
+        $semesterId = $request->semester_id
+            ?? $activeSemester?->id;
+
+        $query = Thesis::with([
             'student.user',
+            'semester.academicYear',
             'examiners'
         ])
-            ->whereIn('status', ['revision', 'passed', 'failed', 'completed'])
+            ->whereIn('status', [
+                'revision',
+                'passed',
+                'failed',
+                'completed'
+            ])
             ->whereHas('examiners', function ($query) use ($lecturer) {
-                $query->where('lecturer_id', $lecturer->id);
-            })->latest()
-            ->paginate(20);
-        return view('lecturer.assessment.results', compact('theses'));
+
+                $query->where(
+                    'lecturer_id',
+                    $lecturer->id
+                );
+            });
+
+        // FILTER SEMESTER
+        $query->where(
+            'semester_id',
+            $semesterId
+        );
+
+        // FILTER STATUS
+        if ($request->filled('status')) {
+
+            $query->where(
+                'status',
+                $request->status
+            );
+        }
+
+        // FILTER NIM
+        if ($request->filled('nim')) {
+
+            $query->whereHas(
+                'student',
+                function ($q) use ($request) {
+
+                    $q->where(
+                        'nim',
+                        'like',
+                        '%' . $request->nim . '%'
+                    );
+                }
+            );
+        }
+
+        // FILTER NAMA
+        if ($request->filled('name')) {
+
+            $query->whereHas(
+                'student.user',
+                function ($q) use ($request) {
+
+                    $q->where(
+                        'name',
+                        'like',
+                        '%' . $request->name . '%'
+                    );
+                }
+            );
+        }
+
+        $theses = $query
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        $semesters = Semester::with('academicYear')
+            ->latest()
+            ->get();
+
+        return view('lecturer.assessment.results', compact('theses', 'semesters', 'activeSemester', 'semesterId'));
     }
 
     public function show(string $id)
@@ -86,7 +218,7 @@ class ThesisResultController extends Controller
 
         // kirim email
 
-        return redirect()->route('results.lecturer')->with(
+        return redirect()->back()->with(
             'success',
             'Finalisasi sidang berhasil'
         );

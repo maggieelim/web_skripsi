@@ -1,40 +1,70 @@
 <div class="modal fade" id="finalizationModal{{ $thesis->id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
-            <div class="modal-header">
+            <div class="modal-header pb-2">
                 <h5 class="modal-title">
-                    Finalisasi Sidang
-                </h5>
-
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    {{ $thesis->student->user->name }} </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
             </div>
 
             <form method="POST" action="{{ route('assessment.finalization.submit', $thesis->id) }}">
                 @csrf
-
                 <div class="modal-body">
-
+                    {{-- NILAI DOSEN PENGUJI --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold">
-                            Mahasiswa
-                        </label>
 
-                        <input type="text" class="form-control" value="{{ $thesis->student->user->name }}" readonly>
+                        <div class="fw-bold small">
+                            Nilai Penguji
+                        </div>
+
+                        <div class="border rounded">
+
+                            @foreach ($thesis->examiners->sortBy('role') as $examiner)
+
+                            @php
+                            $score = $examiner->lecturer?->supervisorScores
+                            ?->where('thesis_id', $thesis->id)
+                            ->first();
+                            @endphp
+
+                            <div class="d-flex justify-content-between align-items-center px-2 py-1 border-bottom">
+
+                                <div>
+                                    <div class="fw-semibold small">
+                                        {{ ucfirst($examiner->role) }}
+                                    </div>
+
+                                    <div class="text-muted small">
+                                        {{ $examiner->lecturer?->user?->name ?? '-' }}, {{ $examiner->lecturer?->gelar
+                                        ?? '' }}
+                                    </div>
+                                </div>
+
+                                <div class="fw-bold fs-6">
+                                    {{ $score?->score ?? '-' }}
+                                </div>
+
+                            </div>
+
+                            @endforeach
+
+                        </div>
+
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">
+                        <div class="fw-bold small">
                             Nilai Akhir
-                        </label>
-
+                        </div>
                         <input type="text" class="form-control" value="{{ $thesis->final_score ?? '-' }}" readonly>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">
+                    {{-- HASIL SIDANG --}}
+                    <div>
+                        <div class="fw-bold small">
                             Hasil Sidang
-                        </label>
+                        </div>
 
                         <select name="final_result" class="form-control" required>
                             <option value="">
@@ -63,13 +93,12 @@
 
                 </div>
 
-                <div class="modal-footer">
-
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                <div class="modal-footer pb-0">
+                    <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">
                         Cancel
                     </button>
 
-                    <button type="submit" class="btn bg-gradient-success">
+                    <button type="submit" class="btn btn-sm bg-gradient-success">
                         Finalisasi
                     </button>
 

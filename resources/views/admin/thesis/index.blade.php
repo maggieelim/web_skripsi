@@ -7,8 +7,16 @@
         <div class="card mb-4">
             <div
                 class="card-header pb-0 d-flex flex-wrap flex-md-nowrap justify-content-between align-items-start gap-2">
-                <div>
-                    <h5 class="mb-0">List Tugas Akhir</h5>
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2">
+                    <h5 class="mb-1 fw-bold">
+                        List Tugas Akhir
+                    </h5>
+                    @if ($semesterId)
+                    @php
+                    $selectedSemester = $semesters->firstWhere('id', $semesterId);
+                    @endphp
+                    <x-semester-badge :semester="$selectedSemester" :activeSemester="$activeSemester" />
+                    @endif
                 </div>
                 <div class="d-flex flex-wrap justify-content-start justify-content-md-end gap-2 mt-2 mt-md-0">
                     <!-- Tombol toggle collapse -->
@@ -24,14 +32,82 @@
 
             <!-- Collapse Form -->
             <div class="collapse" id="filterCollapse">
-                <form method="GET" action="{{ route('thesis.index') }}">
+                <form method="GET" action="{{ route('admin.thesis.index') }}">
+
                     <div class="mx-3 my-2 py-2">
+
                         <div class="row g-2 align-items-end">
-                            <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-                                <a href="{{ route('thesis.index') }}" class="btn btn-light btn-sm">Reset</a>
-                                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+
+                            {{-- SEMESTER --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Semester
+                                </label>
+
+                                <select name="semester_id" class="form-select">
+                                    @foreach ($semesters as $semester)
+                                    <option value="{{ $semester->id }}" {{ (request('semester_id') ?
+                                        request('semester_id')==$semester->id
+                                        : $activeSemester?->id == $semester->id)
+                                        ? 'selected'
+                                        : ''
+                                        }}>
+
+                                        {{ $semester->semester_name }}-{{ $semester->academicYear->year_name }}
+
+                                        @if($activeSemester && $semester->id == $activeSemester->id)
+                                        (Aktif)
+                                        @endif
+                                    </option>
+                                    @endforeach
+
+                                </select>
                             </div>
 
+                            {{-- STATUS --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Status
+                                </label>
+                                <select name="status" class="form-select">
+                                    <option value="">
+                                        -- Semua Status --
+                                    </option>
+                                    <option value="scheduled" {{ request('status')=='scheduled' ? 'selected' : '' }}>
+                                        Scheduled
+                                    </option>
+                                    <option value="ongoing" {{ request('status')=='ongoing' ? 'selected' : '' }}>
+                                        Ongoing
+                                    </option>
+                                </select>
+                            </div>
+
+                            {{-- NIM --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    NIM
+                                </label>
+
+                                <input type="text" name="nim" class="form-control" value="{{ request('nim') }}"
+                                    placeholder="NIM">
+                            </div>
+
+                            {{-- NAMA --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Nama Mahasiswa
+                                </label>
+
+                                <input type="text" name="name" class="form-control" value="{{ request('name') }}"
+                                    placeholder="Nama mahasiswa">
+                            </div>
+
+                            {{-- BUTTON --}}
+                            <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                                <a href="{{ route('thesis.index', ['reset' => true]) }}"
+                                    class="btn btn-light btn-sm">Reset</a>
+                                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -168,6 +244,9 @@
         <div class="modal-content">
             <form action="{{ route('admin.thesis.import.preview') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+
+                <input type="hidden" name="semester_id" value="{{ request('semester_id', $activeSemester?->id) }}">
+
                 <div class="modal-header">
                     <h5 class="modal-title">
                         Import Excel
@@ -181,7 +260,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <a href="{{ route('admin.thesis.download') }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('admin.thesis.download') }}" class="btn btn-primary px-3 py-2">
+                        <i class="fas fa-download me-2"></i>
                         Template
                     </a>
                     <button type="submit" class="btn btn-sm bg-gradient-info">

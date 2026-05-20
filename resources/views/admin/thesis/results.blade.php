@@ -6,8 +6,16 @@
         <div class="card mb-4">
             <div
                 class="card-header pb-0 d-flex flex-wrap flex-md-nowrap justify-content-between align-items-start gap-2">
-                <div>
-                    <h5 class="mb-0">List Tugas Akhir</h5>
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2">
+                    <h5 class="mb-1 fw-bold">
+                        List Hasil Tugas Akhir
+                    </h5>
+                    @if ($semesterId)
+                    @php
+                    $selectedSemester = $semesters->firstWhere('id', $semesterId);
+                    @endphp
+                    <x-semester-badge :semester="$selectedSemester" :activeSemester="$activeSemester" />
+                    @endif
                 </div>
                 <div class="d-flex flex-wrap justify-content-start justify-content-md-end gap-2 mt-2 mt-md-0">
                     <!-- Tombol toggle collapse -->
@@ -20,14 +28,85 @@
 
             <!-- Collapse Form -->
             <div class="collapse" id="filterCollapse">
-                <form method="GET" action="{{ route('thesis.index') }}">
+                <form method="GET" action="{{ route('admin.results.index') }}">
+
                     <div class="mx-3 my-2 py-2">
+
                         <div class="row g-2 align-items-end">
-                            <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-                                <a href="{{ route('thesis.index') }}" class="btn btn-light btn-sm">Reset</a>
-                                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+
+                            {{-- SEMESTER --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Semester
+                                </label>
+
+                                <select name="semester_id" class="form-select">
+                                    @foreach ($semesters as $semester)
+                                    <option value="{{ $semester->id }}" {{ (request('semester_id') ?
+                                        request('semester_id')==$semester->id
+                                        : $activeSemester?->id == $semester->id)
+                                        ? 'selected'
+                                        : ''
+                                        }}>
+
+                                        {{ $semester->semester_name }}-{{ $semester->academicYear->year_name }}
+
+                                        @if($activeSemester && $semester->id == $activeSemester->id)
+                                        (Aktif)
+                                        @endif
+                                    </option>
+                                    @endforeach
+
+                                </select>
                             </div>
 
+                            {{-- STATUS --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Status
+                                </label>
+                                <select name="status" class="form-select">
+                                    <option value="">
+                                        -- Semua Status --
+                                    </option>
+                                    <option value="revision" {{ request('status')=='revision' ? 'selected' : '' }}>
+                                        Lulus Dengan Perbaikan
+                                    </option>
+                                    <option value="passed" {{ request('status')=='passed' ? 'selected' : '' }}>
+                                        Lulus Tanpa Perbaikan
+                                    </option>
+                                    <option value="failed" {{ request('status')=='failed' ? 'selected' : '' }}>
+                                        Tidak Lulus
+                                    </option>
+                                </select>
+                            </div>
+
+                            {{-- NIM --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    NIM
+                                </label>
+
+                                <input type="text" name="nim" class="form-control" value="{{ request('nim') }}"
+                                    placeholder="NIM">
+                            </div>
+
+                            {{-- NAMA --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Nama Mahasiswa
+                                </label>
+
+                                <input type="text" name="name" class="form-control" value="{{ request('name') }}"
+                                    placeholder="Nama mahasiswa">
+                            </div>
+
+                            {{-- BUTTON --}}
+                            <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                                <a href="{{ route('admin.results.index', ['reset' => true]) }}"
+                                    class="btn btn-light btn-sm">Reset</a>
+                                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -87,13 +166,21 @@
 
                                 {{-- STATUS --}}
                                 <td class="align-middle fw-bold text-center text-sm">
-                                    {{ ucfirst($thesis->final_result) }}
-                                </td>
+                                    {{ ucfirst($thesis->final_result ?: $thesis->status) }} </td>
+
+                                @include('lecturer.assessment.final-modal')
 
                                 <td class="align-middle text-center">
+                                    <button type="button" class="btn bg-gradient-success m-1 p-2 px-3"
+                                        data-bs-toggle="modal" data-bs-target="#finalizationModal{{ $thesis->id }}">
+                                        <i class="fas fa-clipboard-check me-1"></i>
+                                        Result
+                                    </button>
                                     @if ($thesis->bap_file)
-                                    <a href="{{ asset('storage/' . $thesis->bap_file) }}" target="_blank"
+                                    <a href="{{ asset('storage/' . $thesis->bap_file) }}"
+                                        download="BAP-{{ $thesis->student->nim }}.pdf"
                                         class="btn bg-gradient-info m-1 p-2 px-3">
+
                                         <i class="fas fa-download me-2"></i>
                                         BAP
                                     </a>

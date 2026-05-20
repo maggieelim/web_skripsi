@@ -11,9 +11,17 @@
             <div class="card-header bg-white border-0 pb-3">
 
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                    <h5 class="mb-1 fw-bold">
-                        List Tugas Akhir
-                    </h5>
+                    <div class="d-flex flex-column flex-md-row align-items-md-center gap-2">
+                        <h5 class="mb-1 fw-bold">
+                            List Tugas Akhir
+                        </h5>
+                        @if ($semesterId)
+                        @php
+                        $selectedSemester = $semesters->firstWhere('id', $semesterId);
+                        @endphp
+                        <x-semester-badge :semester="$selectedSemester" :activeSemester="$activeSemester" />
+                        @endif
+                    </div>
                     {{-- FILTER BUTTON --}}
                     <button class="btn btn-outline-secondary btn-sm mb-0" type="button" data-bs-toggle="collapse"
                         data-bs-target="#filterCollapse">
@@ -26,33 +34,84 @@
 
             {{-- FILTER --}}
             <div class="collapse" id="filterCollapse">
+                <form method="GET" action="{{ route('assessment.index') }}">
 
-                <form method="GET" action="{{ route('thesis.index') }}">
+                    <div class="mx-3 my-2 py-2">
 
-                    <div class="px-4 pb-3">
+                        <div class="row g-2 align-items-end">
 
-                        <div class="row g-3 align-items-end">
-
-                            {{-- contoh filter nanti --}}
-                            {{--
-                            <div class="col-md-4">
-                                <label class="form-label">
-                                    Status
+                            {{-- SEMESTER --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Semester
                                 </label>
 
-                                <select class="form-select" name="status">
-                                    <option value="">Semua</option>
+                                <select name="semester_id" class="form-select">
+                                    @foreach ($semesters as $semester)
+                                    <option value="{{ $semester->id }}" {{ (request('semester_id') ?
+                                        request('semester_id')==$semester->id
+                                        : $activeSemester?->id == $semester->id)
+                                        ? 'selected'
+                                        : ''
+                                        }}>
+
+                                        {{ $semester->semester_name }}-{{ $semester->academicYear->year_name }}
+
+                                        @if($activeSemester && $semester->id == $activeSemester->id)
+                                        (Aktif)
+                                        @endif
+                                    </option>
+                                    @endforeach
+
                                 </select>
                             </div>
-                            --}}
 
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <a href="{{ route('thesis.index') }}" class="btn btn-light btn-sm mb-0">
-                                    Reset
-                                </a>
-                                <button type="submit" class="btn btn-primary btn-sm mb-0">
-                                    Apply
-                                </button>
+                            {{-- STATUS --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Status
+                                </label>
+                                <select name="status" class="form-select">
+                                    <option value="">
+                                        -- Semua Status --
+                                    </option>
+                                    <option value="scheduled" {{ request('status')=='scheduled' ? 'selected' : '' }}>
+                                        Scheduled
+                                    </option>
+                                    <option value="ongoing" {{ request('status')=='ongoing' ? 'selected' : '' }}>
+                                        Ongoing
+                                    </option>
+                                    <option value="assessed" {{ request('status')=='assessed' ? 'selected' : '' }}>
+                                        Assessed
+                                    </option>
+                                </select>
+                            </div>
+
+                            {{-- NIM --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    NIM
+                                </label>
+
+                                <input type="text" name="nim" class="form-control" value="{{ request('nim') }}"
+                                    placeholder="NIM">
+                            </div>
+
+                            {{-- NAMA --}}
+                            <div class="col-md-3">
+                                <label class="form-label mb-1">
+                                    Nama Mahasiswa
+                                </label>
+
+                                <input type="text" name="name" class="form-control" value="{{ request('name') }}"
+                                    placeholder="Nama mahasiswa">
+                            </div>
+
+                            {{-- BUTTON --}}
+                            <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                                <a href="{{ route('assessment.index', ['reset' => true]) }}"
+                                    class="btn btn-light btn-sm">Reset</a>
+                                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
                             </div>
                         </div>
                     </div>

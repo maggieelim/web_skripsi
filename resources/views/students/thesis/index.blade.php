@@ -16,15 +16,15 @@
                         </a>
                         @endif
                         <!-- Tombol toggle collapse -->
-                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
+                        {{-- <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
                             data-bs-target="#filterCollapse" aria-expanded="false" aria-controls="filterCollapse">
                             <i class="fas fa-filter"></i> Filter
-                        </button>
+                        </button> --}}
                 </div>
             </div>
 
             <!-- Collapse Form -->
-            <div class="collapse" id="filterCollapse">
+            {{-- <div class="collapse" id="filterCollapse">
                 <form method="GET" action="{{ route('thesis.index') }}">
                     <div class="mx-3 my-2 py-2">
                         <div class="row g-2 align-items-end">
@@ -36,7 +36,7 @@
                         </div>
                     </div>
                 </form>
-            </div>
+            </div> --}}
 
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">
@@ -75,7 +75,7 @@
                                     \Carbon\Carbon::parse($thesis->scheduled_date)->format('d M Y H:i') : '-' }}
                                 </td>
                                 <td class="align-middle text-center text-sm font-weight-bold">
-                                    {{ ucfirst($thesis->status) }}
+                                    {{ ucfirst($thesis->final_result ?? $thesis->status) }}
                                 </td>
                                 <td class="align-middle text-center">
 

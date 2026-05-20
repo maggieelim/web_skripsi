@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\ThesisImport;
 use App\Models\Lecturer;
+use App\Models\Semester;
 use App\Models\Student;
 use App\Models\Thesis;
 use App\Models\ThesisExaminer;
@@ -34,7 +35,8 @@ class ThesisImportController extends Controller
     public function preview(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls'
+            'file' => 'required|mimes:xlsx,xls',
+            'semester_id' => 'nullable|exists:semesters,id',
         ]);
 
         $rows = Excel::toCollection(
@@ -126,6 +128,11 @@ class ThesisImportController extends Controller
             json_encode($rows->toArray())
         );
 
+        session()->put(
+            'import_semester_id',
+            $request->semester_id
+        );
+
         return redirect()
             ->route('thesis.index')
             ->with('previewData', $previewData);
@@ -147,7 +154,13 @@ class ThesisImportController extends Controller
                 ->with('error', 'Data import tidak ditemukan');
         }
 
-        $activeSemester = SemesterService::active();
+        $semesterId = session('import_semester_id');
+
+        $activeSemester = Semester::find($semesterId);
+
+        if (!$activeSemester) {
+            $activeSemester = SemesterService::active();
+        }
 
         foreach ($rows->skip(1) as $row) {
 
@@ -271,7 +284,8 @@ class ThesisImportController extends Controller
 
         session()->forget([
             'import_rows',
-            'previewData'
+            'previewData',
+            'import_semester_id'
         ]);
 
         return redirect()
