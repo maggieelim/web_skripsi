@@ -35,7 +35,7 @@ class ThesisController extends Controller
             $theses = Thesis::with([
                 'student.user',
             ])
-                ->whereIn('status', ['draft', 'submitted', 'scheduled', 'ongoing',])
+                ->whereIn('status', ['draft', 'submitted', 'scheduled'])
                 ->latest()
                 ->paginate(20);
 
