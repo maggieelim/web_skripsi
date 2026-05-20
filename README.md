@@ -354,16 +354,13 @@ Route::middleware(['auth'])->group(function () {
 
 ## Main Tables
 
-| Table       | Function            |
-| ----------- | ------------------- |
-| users       | Menyimpan data user |
-| roles       | Hak akses user      |
-| theses      | Data skripsi        |
-| supervisors | Data pembimbing     |
-| examiners   | Data penguji        |
-| schedules   | Jadwal sidang       |
-| revisions   | Data revisi         |
-| scores      | Nilai sidang        |
+| Table         | Function            |
+| ------------- | ------------------- |
+| users         | Menyimpan data user |
+| roles         | Hak akses user      |
+| theses        | Data skripsi        |
+| examiners     | Data penguji        |
+| rubric_scores | Nilai sidang        |
 
 ---
 
