@@ -127,7 +127,7 @@
                         </div>
                     </div>
                     {{-- REVISION NOTE --}}
-                    @if($revisionNote)
+                    @if($thesis->final_result && $revisionNote)
                     <div class="border-top pt-2">
 
                         <div class="mb-2">

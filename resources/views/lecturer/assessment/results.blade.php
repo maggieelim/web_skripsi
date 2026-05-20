@@ -69,13 +69,16 @@
                                     <option value="">
                                         -- Semua Status --
                                     </option>
-                                    <option value="revision" {{ request('status')=='revision' ? 'selected' : '' }}>
+                                    <option value="Lulus Dengan Perbaikan" {{
+                                        request('status')=='Lulus Dengan Perbaikan' ? 'selected' : '' }}>
                                         Lulus Dengan Perbaikan
                                     </option>
-                                    <option value="passed" {{ request('status')=='passed' ? 'selected' : '' }}>
+                                    <option value="Lulus Tanpa Perbaikan" {{ request('status')=='Lulus Tanpa Perbaikan'
+                                        ? 'selected' : '' }}>
                                         Lulus Tanpa Perbaikan
                                     </option>
-                                    <option value="failed" {{ request('status')=='failed' ? 'selected' : '' }}>
+                                    <option value="Tidak Lulus" {{ request('status')=='Tidak Lulus' ? 'selected' : ''
+                                        }}>
                                         Tidak Lulus
                                     </option>
                                 </select>
@@ -166,7 +169,7 @@
 
                                 {{-- STATUS --}}
                                 <td class="align-middle fw-bold text-center text-sm">
-                                    {{ ucfirst($thesis->final_result) }}
+                                    {{ ucfirst($thesis->final_result ?: $thesis->status) }} </td>
                                 </td>
 
                                 @php

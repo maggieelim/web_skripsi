@@ -37,9 +37,8 @@ class ThesisResultController extends Controller
 
         // FILTER STATUS
         if ($request->filled('status')) {
-
             $query->where(
-                'status',
+                'final_result',
                 $request->status
             );
         }
@@ -123,9 +122,8 @@ class ThesisResultController extends Controller
 
         // FILTER STATUS
         if ($request->filled('status')) {
-
             $query->where(
-                'status',
+                'final_result',
                 $request->status
             );
         }
